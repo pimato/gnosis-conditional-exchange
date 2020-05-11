@@ -1,6 +1,7 @@
 import { BigNumber } from 'ethers/utils'
 
 import { Outcome } from '../components/market/sections/market_create/steps/outcomes'
+import { Block } from 'ethers/providers'
 
 export enum Status {
   Ready = 'Ready',
@@ -166,3 +167,10 @@ export enum Ternary {
   False,
   Unknown,
 }
+
+export type HistoricDataPoint = {
+  block: Block
+  holdings: string[]
+}
+
+export type HistoricData = HistoricDataPoint[]

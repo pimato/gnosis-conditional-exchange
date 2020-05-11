@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 
-import { TOGGLEABLE_EXTRA_INFORMATION } from '../../../../common/constants'
+import { TOGGLEABLE_EXTRA_INFORMATION, SHOW_TRADE_HISTORY } from '../../../../common/constants'
 import { formatBigNumber, formatDate } from '../../../../util/tools'
 import { MarketMakerData } from '../../../../util/types'
 import { GridTwoColumns, SubsectionTitleAction, SubsectionTitleWrapper } from '../../../common'
 import { TitleValue } from '../../../common/text/title_value'
 import { DisplayArbitrator } from '../display_arbitrator'
 import { MarketTitle } from '../market_title'
+import { HistoryChartContainer } from '../history-chart'
 
 interface Props {
   marketMakerData: MarketMakerData
@@ -16,9 +17,11 @@ interface Props {
 
 const MarketTopDetails: React.FC<Props> = (props: Props) => {
   const [showingExtraInformation, setExtraInformation] = useState(false)
+  const [showingTradeHistory, setTradeHistory] = useState(false)
 
   const { marketMakerData, title, toggleTitle } = props
   const {
+    address,
     arbitrator,
     collateral,
     collateralVolume,
@@ -35,6 +38,7 @@ const MarketTopDetails: React.FC<Props> = (props: Props) => {
 
   const toggleExtraInformation = () =>
     showingExtraInformation ? setExtraInformation(false) : setExtraInformation(true)
+  const toggleTradeHistory = () => (showingTradeHistory ? setTradeHistory(false) : setTradeHistory(true))
 
   return (
     <>
@@ -43,6 +47,11 @@ const MarketTopDetails: React.FC<Props> = (props: Props) => {
         {TOGGLEABLE_EXTRA_INFORMATION && (
           <SubsectionTitleAction onClick={toggleExtraInformation}>
             {showingExtraInformation ? 'Hide' : 'Show'} {toggleTitle}
+          </SubsectionTitleAction>
+        )}
+        {SHOW_TRADE_HISTORY && (
+          <SubsectionTitleAction onClick={toggleTradeHistory}>
+            {`${showingTradeHistory ? 'Hide' : 'Show'} trade history`}
           </SubsectionTitleAction>
         )}
       </SubsectionTitleWrapper>
@@ -72,6 +81,7 @@ const MarketTopDetails: React.FC<Props> = (props: Props) => {
         <TitleValue title={'Arbitrator/Oracle'} value={arbitrator && <DisplayArbitrator arbitrator={arbitrator} />} />
         <TitleValue title={'Total Volume'} value={totalVolumeFormat} />
       </GridTwoColumns>
+      {showingTradeHistory ? <HistoryChartContainer marketMakerAddress={address} /> : null}
     </>
   )
 }
