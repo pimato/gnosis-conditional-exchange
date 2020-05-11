@@ -3,6 +3,7 @@ import { Block } from 'ethers/providers'
 import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
 import { useWeb3Context } from 'web3-react'
+import { HistoryChart } from './chart'
 
 const buildQueryHistory = (blockNumbers: number[]) => {
   const subqueries = blockNumbers.map(
@@ -78,17 +79,13 @@ export const HistoryChartContainer: React.FC<Props> = ({ marketMakerAddress }) =
   useEffect(() => {
     const getBlocks = async (latestBlockNumber: number) => {
       const blocksPerDay = 5760
+      const totalDataPoints = 7
+      const granularity = 7
 
       if (latestBlockNumber) {
-        const blockNumbers = [
-          latestBlockNumber,
-          latestBlockNumber - 1 * blocksPerDay,
-          latestBlockNumber - 2 * blocksPerDay,
-          latestBlockNumber - 3 * blocksPerDay,
-          latestBlockNumber - 4 * blocksPerDay,
-          latestBlockNumber - 5 * blocksPerDay,
-          latestBlockNumber - 6 * blocksPerDay,
-        ]
+        const blockNumbers = Array.from(new Array(totalDataPoints), (_, i) => i * granularity).map(
+          multiplier => latestBlockNumber - multiplier * blocksPerDay,
+        )
         const blocks = await Promise.all(blockNumbers.map(blockNumber => library.getBlock(blockNumber)))
 
         setBlocks(blocks)
@@ -100,5 +97,5 @@ export const HistoryChartContainer: React.FC<Props> = ({ marketMakerAddress }) =
     }
   }, [latestBlockNumber, library])
 
-  return <div>Test: {JSON.stringify(holdingsSeries, null, 2) || 'no data'}</div>
+  return <HistoryChart holdingSeries={holdingsSeries} />
 }
