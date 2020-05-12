@@ -27,8 +27,8 @@ const renderTooltipContent = (o: any) => {
     <div className="customized-tooltip-content">
       <p className="total">{label}</p>
       <ul className="list">
-        {payload.map((entry: any, index: number) => (
-          <li key={`item-${index}`} style={{ color: '#ffffff' }}>
+        {payload.reverse().map((entry: any, index: number) => (
+          <li key={`item-${index}`} style={{ color: '#f8f8ff' }}>
             {`${entry.name}: (${toPercent(entry.value)})`}
           </li>
         ))}
@@ -67,20 +67,22 @@ export const HistoryChart: React.FC<Props> = ({ holdingSeries, outcomes }) => {
         <YAxis tickFormatter={toPercent} />
         <Tooltip content={renderTooltipContent} />
 
-        {outcomes.map((outcomeName, index) => {
-          const color = themeContext.outcomes.colors[index]
+        {outcomes
+          .map((outcomeName, index) => {
+            const color = themeContext.outcomes.colors[index]
 
-          return (
-            <Area
-              dataKey={outcomeName}
-              fill={color.darker}
-              key={`${index}-${outcomeName}`}
-              stackId="1"
-              stroke="#8884d8"
-              type="monotone"
-            />
-          )
-        })}
+            return (
+              <Area
+                dataKey={outcomeName}
+                fill={color.medium}
+                key={`${index}-${outcomeName}`}
+                stackId="1"
+                stroke="#8884d8"
+                type="monotone"
+              />
+            )
+          })
+          .reverse()}
       </AreaChart>
     )
   ) : null
