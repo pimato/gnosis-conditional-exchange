@@ -83,10 +83,10 @@ export const HistoryChartContainer: React.FC<Props> = ({ hidden, marketMakerAddr
     const getBlocks = async (latestBlockNumber: number) => {
       const blocksPerDay = 5760
       const totalDataPoints = 7
-      const granularity = 7
+      const step = 1
 
       if (latestBlockNumber) {
-        const blockNumbers = Array.from(new Array(totalDataPoints), (_, i) => i * granularity).map(
+        const blockNumbers = Array.from(new Array(totalDataPoints), (_, i) => i * step).map(
           multiplier => latestBlockNumber - multiplier * blocksPerDay,
         )
         const blocks = await Promise.all(blockNumbers.map(blockNumber => library.getBlock(blockNumber)))
