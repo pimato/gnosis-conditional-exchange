@@ -145,7 +145,7 @@ export const MarketHome: React.FC<Props> = (props: Props) => {
   const [showSearch, setShowSearch] = useState<boolean>(false)
   const [showAdvancedFilters, setShowAdvancedFilters] = useState<boolean>(false)
   const [arbitrator, setArbitrator] = useState<Maybe<string>>(null)
-  const [currency, setCurrency] = useState<Maybe<string>>(null)
+  const [currency, setCurrency] = useState<Maybe<string>>(props.currentFilter.currency)
   const [templateId, setTemplateId] = useState<Maybe<string>>(null)
   const CATEGORIES_WITH_ALL = ['All', ...CATEGORIES]
   const filters = [
@@ -221,6 +221,10 @@ export const MarketHome: React.FC<Props> = (props: Props) => {
     return !context.account || !SHOW_MY_MARKETS ? f.state !== MarketStates.myMarkets : true
   }
 
+  const noMarketsAvailable = RemoteData.is.success(markets) && markets.data.length === 0
+  const showFilteringInlineLoading = !noMarketsAvailable && isFiltering
+  const showLoadMoreButton = !isFiltering && moreMarkets && !RemoteData.is.loading(markets)
+
   return (
     <>
       <SectionTitleMarket title={'Markets'} />
@@ -267,6 +271,7 @@ export const MarketHome: React.FC<Props> = (props: Props) => {
         {showSearch && <Search onChange={setTitle} value={title} />}
         {showAdvancedFilters && (
           <AdvancedFilters
+            currency={currency}
             onChangeArbitrator={setArbitrator}
             onChangeCurrency={setCurrency}
             onChangeTemplateId={setTemplateId}
@@ -279,12 +284,10 @@ export const MarketHome: React.FC<Props> = (props: Props) => {
             markets.data.slice(0, count).map(item => {
               return <ListItem key={item.address} market={item}></ListItem>
             })}
-          {RemoteData.is.success(markets) && markets.data.length === 0 && (
-            <NoMarketsAvailable>No markets available.</NoMarketsAvailable>
-          )}
-          {isFiltering && <InlineLoading message="Loading Markets..." />}
+          {noMarketsAvailable && <NoMarketsAvailable>No markets available.</NoMarketsAvailable>}
+          {showFilteringInlineLoading && <InlineLoading message="Loading Markets..." />}
         </ListWrapper>
-        {!isFiltering && moreMarkets && !RemoteData.is.loading(markets) && (
+        {showLoadMoreButton && (
           <LoadMoreWrapper>
             <Button
               buttonType={ButtonType.secondaryLine}
