@@ -69,11 +69,20 @@ type Props = {
   outcomes: string[]
 }
 
+const blocksPerDay = 5760
+
+const mapPeriod: { [period: string]: { totalDataPoints: number; blocksPerPeriod: number } } = {
+  '1D': { totalDataPoints: 24, blocksPerPeriod: Math.floor(blocksPerDay / 24) },
+  '1W': { totalDataPoints: 7, blocksPerPeriod: blocksPerDay },
+  '1M': { totalDataPoints: 30, blocksPerPeriod: blocksPerDay },
+}
+
 export const HistoryChartContainer: React.FC<Props> = ({ hidden, marketMakerAddress, outcomes }) => {
   const { library } = useWeb3Context()
   const [latestBlockNumber, setLatestBlockNumber] = useState<Maybe<number>>(null)
   const [blocks, setBlocks] = useState<Maybe<Block[]>>(null)
   const holdingsSeries = useHoldingsHistory(marketMakerAddress, blocks)
+  const [period, setPeriod] = useState('1W')
 
   useEffect(() => {
     library.getBlockNumber().then(setLatestBlockNumber)
@@ -81,13 +90,11 @@ export const HistoryChartContainer: React.FC<Props> = ({ hidden, marketMakerAddr
 
   useEffect(() => {
     const getBlocks = async (latestBlockNumber: number) => {
-      const blocksPerDay = 5760
-      const totalDataPoints = 7
-      const step = 1
+      const { totalDataPoints, blocksPerPeriod } = mapPeriod[period]
 
       if (latestBlockNumber) {
-        const blockNumbers = Array.from(new Array(totalDataPoints), (_, i) => i * step).map(
-          multiplier => latestBlockNumber - multiplier * blocksPerDay,
+        const blockNumbers = Array.from(new Array(totalDataPoints), (_, i) => i).map(
+          multiplier => latestBlockNumber - multiplier * blocksPerPeriod,
         )
         const blocks = await Promise.all(blockNumbers.map(blockNumber => library.getBlock(blockNumber)))
 
@@ -98,7 +105,15 @@ export const HistoryChartContainer: React.FC<Props> = ({ hidden, marketMakerAddr
     if (latestBlockNumber) {
       getBlocks(latestBlockNumber)
     }
-  }, [latestBlockNumber, library])
+  }, [latestBlockNumber, library, period])
 
-  return hidden ? null : <HistoryChart holdingSeries={holdingsSeries} outcomes={outcomes} />
+  return hidden ? null : (
+    <HistoryChart
+      value={period}
+      onChange={setPeriod}
+      holdingSeries={holdingsSeries}
+      outcomes={outcomes}
+      options={Object.keys(mapPeriod)}
+    />
+  )
 }
