@@ -18,6 +18,7 @@ interface Props {
 const MarketTopDetails: React.FC<Props> = (props: Props) => {
   const [showingExtraInformation, setExtraInformation] = useState(false)
   const [showingTradeHistory, setTradeHistory] = useState(false)
+  const [tradeHistoryLoaded, setTradeHistoryLoaded] = useState(false)
 
   const { marketMakerData, title, toggleTitle } = props
   const {
@@ -38,7 +39,14 @@ const MarketTopDetails: React.FC<Props> = (props: Props) => {
 
   const toggleExtraInformation = () =>
     showingExtraInformation ? setExtraInformation(false) : setExtraInformation(true)
-  const toggleTradeHistory = () => (showingTradeHistory ? setTradeHistory(false) : setTradeHistory(true))
+  const toggleTradeHistory = () => {
+    if (showingTradeHistory) {
+      setTradeHistory(false)
+    } else {
+      setTradeHistory(true)
+      setTradeHistoryLoaded(true)
+    }
+  }
 
   return (
     <>
@@ -81,7 +89,13 @@ const MarketTopDetails: React.FC<Props> = (props: Props) => {
         <TitleValue title={'Arbitrator/Oracle'} value={arbitrator && <DisplayArbitrator arbitrator={arbitrator} />} />
         <TitleValue title={'Total Volume'} value={totalVolumeFormat} />
       </GridTwoColumns>
-      <HistoryChartContainer hidden={!showingTradeHistory} marketMakerAddress={address} outcomes={question.outcomes} />
+      {tradeHistoryLoaded && (
+        <HistoryChartContainer
+          hidden={!showingTradeHistory}
+          marketMakerAddress={address}
+          outcomes={question.outcomes}
+        />
+      )}
     </>
   )
 }
