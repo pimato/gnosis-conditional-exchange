@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 
-import { TOGGLEABLE_EXTRA_INFORMATION, SHOW_TRADE_HISTORY } from '../../../../common/constants'
+import { SHOW_TRADE_HISTORY, TOGGLEABLE_EXTRA_INFORMATION } from '../../../../common/constants'
 import { formatBigNumber, formatDate } from '../../../../util/tools'
 import { MarketMakerData } from '../../../../util/types'
 import { GridTwoColumns, SubsectionTitleAction, SubsectionTitleWrapper } from '../../../common'
 import { TitleValue } from '../../../common/text/title_value'
 import { DisplayArbitrator } from '../display_arbitrator'
-import { MarketTitle } from '../market_title'
 import { HistoryChartContainer } from '../history-chart'
+import { MarketTitle } from '../market_title'
 
 interface Props {
   marketMakerData: MarketMakerData
@@ -81,7 +81,7 @@ const MarketTopDetails: React.FC<Props> = (props: Props) => {
         <TitleValue title={'Arbitrator/Oracle'} value={arbitrator && <DisplayArbitrator arbitrator={arbitrator} />} />
         <TitleValue title={'Total Volume'} value={totalVolumeFormat} />
       </GridTwoColumns>
-      <HistoryChartContainer marketMakerAddress={address} hidden={!showingTradeHistory} />
+      <HistoryChartContainer hidden={!showingTradeHistory} marketMakerAddress={address} />
     </>
   )
 }

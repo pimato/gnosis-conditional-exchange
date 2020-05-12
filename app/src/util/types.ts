@@ -1,7 +1,7 @@
+import { Block } from 'ethers/providers'
 import { BigNumber } from 'ethers/utils'
 
 import { Outcome } from '../components/market/sections/market_create/steps/outcomes'
-import { Block } from 'ethers/providers'
 
 export enum Status {
   Ready = 'Ready',

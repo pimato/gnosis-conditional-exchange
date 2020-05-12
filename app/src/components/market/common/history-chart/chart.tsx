@@ -1,10 +1,11 @@
-import React, { useContext } from 'react'
-import { HistoricData } from '../../../../util/types'
-import { calcPrice } from '../../../../util/tools'
 import { bigNumberify } from 'ethers/utils'
-import { AreaChart, XAxis, YAxis, Area } from 'recharts'
-import { ThemeContext } from 'styled-components'
 import moment from 'moment'
+import React, { useContext } from 'react'
+import { Area, AreaChart, XAxis, YAxis } from 'recharts'
+import { ThemeContext } from 'styled-components'
+
+import { calcPrice } from '../../../../util/tools'
+import { HistoricData } from '../../../../util/types'
 
 type Props = {
   holdingSeries: Maybe<HistoricData>
@@ -32,14 +33,14 @@ export const HistoryChart: React.FC<Props> = ({ holdingSeries }) => {
 
   return holdingSeries && data ? (
     holdingSeries.length <= 1 ? (
-      <div>There's not enough historical data for this market</div>
+      <div>There is not enough historical data for this market</div>
     ) : (
       <AreaChart
-        width={500}
-        height={300}
         data={data}
-        stackOffset="expand"
+        height={300}
         margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+        stackOffset="expand"
+        width={500}
       >
         <XAxis dataKey="date" />
         <YAxis tickFormatter={toPercent} />
@@ -49,12 +50,12 @@ export const HistoryChart: React.FC<Props> = ({ holdingSeries }) => {
           return (
             color && (
               <Area
-                type="monotone"
                 dataKey={index}
+                fill={color.darker}
                 key={`${index}-${date}`}
                 stackId="1"
                 stroke="#8884d8"
-                fill={color.darker}
+                type="monotone"
               />
             )
           )

@@ -3,6 +3,7 @@ import { Block } from 'ethers/providers'
 import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
 import { useWeb3Context } from 'web3-react'
+
 import { HistoryChart } from './chart'
 
 const buildQueryHistory = (blockNumbers: number[]) => {
@@ -67,7 +68,7 @@ type Props = {
   hidden: boolean
 }
 
-export const HistoryChartContainer: React.FC<Props> = ({ marketMakerAddress, hidden }) => {
+export const HistoryChartContainer: React.FC<Props> = ({ hidden, marketMakerAddress }) => {
   const { library } = useWeb3Context()
   const [latestBlockNumber, setLatestBlockNumber] = useState<Maybe<number>>(null)
   const [blocks, setBlocks] = useState<Maybe<Block[]>>(null)
