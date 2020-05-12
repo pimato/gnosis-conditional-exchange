@@ -81,7 +81,7 @@ const MarketTopDetails: React.FC<Props> = (props: Props) => {
         <TitleValue title={'Arbitrator/Oracle'} value={arbitrator && <DisplayArbitrator arbitrator={arbitrator} />} />
         <TitleValue title={'Total Volume'} value={totalVolumeFormat} />
       </GridTwoColumns>
-      <HistoryChartContainer hidden={!showingTradeHistory} marketMakerAddress={address} />
+      <HistoryChartContainer hidden={!showingTradeHistory} marketMakerAddress={address} outcomes={question.outcomes} />
     </>
   )
 }

@@ -1,7 +1,7 @@
 import { bigNumberify } from 'ethers/utils'
 import moment from 'moment'
 import React, { useContext } from 'react'
-import { Area, AreaChart, XAxis, YAxis } from 'recharts'
+import { Area, AreaChart, Tooltip, XAxis, YAxis } from 'recharts'
 import { ThemeContext } from 'styled-components'
 
 import { calcPrice } from '../../../../util/tools'
@@ -9,6 +9,7 @@ import { HistoricData } from '../../../../util/types'
 
 type Props = {
   holdingSeries: Maybe<HistoricData>
+  outcomes: string[]
 }
 
 const timestampToDate = (timestamp: number) => {
@@ -19,14 +20,34 @@ const toPercent = (decimal: number, fixed = 0) => {
   return `${(decimal * 100).toFixed(fixed)}%`
 }
 
-export const HistoryChart: React.FC<Props> = ({ holdingSeries }) => {
+const renderTooltipContent = (o: any) => {
+  const { label, payload } = o
+
+  return (
+    <div className="customized-tooltip-content">
+      <p className="total">{label}</p>
+      <ul className="list">
+        {payload.map((entry: any, index: number) => (
+          <li key={`item-${index}`} style={{ color: '#ffffff' }}>
+            {`${entry.name}: ${entry.value}(${toPercent(entry.value)})`}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+export const HistoryChart: React.FC<Props> = ({ holdingSeries, outcomes }) => {
   const data =
     holdingSeries &&
     holdingSeries
       .sort((a, b) => a.block.timestamp - b.block.timestamp)
       .map(h => {
         const prices = calcPrice(h.holdings.map(bigNumberify))
-        return { ...prices, date: timestampToDate(h.block.timestamp) }
+        const outcomesPrices: { [outcomeName: string]: number } = {}
+        outcomes.forEach((k, i) => (outcomesPrices[k] = prices[i]))
+
+        return { ...outcomesPrices, date: timestampToDate(h.block.timestamp) }
       })
 
   const themeContext = useContext(ThemeContext)
@@ -44,20 +65,20 @@ export const HistoryChart: React.FC<Props> = ({ holdingSeries }) => {
       >
         <XAxis dataKey="date" />
         <YAxis tickFormatter={toPercent} />
-        {data.map(({ date }, index) => {
+        <Tooltip content={renderTooltipContent} />
+
+        {outcomes.map((outcomeName, index) => {
           const color = themeContext.outcomes.colors[index]
 
           return (
-            color && (
-              <Area
-                dataKey={index}
-                fill={color.darker}
-                key={`${index}-${date}`}
-                stackId="1"
-                stroke="#8884d8"
-                type="monotone"
-              />
-            )
+            <Area
+              dataKey={outcomeName}
+              fill={color.darker}
+              key={`${index}-${outcomeName}`}
+              stackId="1"
+              stroke="#8884d8"
+              type="monotone"
+            />
           )
         })}
       </AreaChart>
