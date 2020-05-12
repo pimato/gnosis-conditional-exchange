@@ -4,6 +4,8 @@ import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
 import { useWeb3Context } from 'web3-react'
 
+import { Period } from '../../../../util/types'
+
 import { HistoryChart } from './chart'
 
 const buildQueryHistory = (blockNumbers: number[]) => {
@@ -70,8 +72,7 @@ type Props = {
 }
 
 const blocksPerDay = 5760
-
-const mapPeriod: { [period: string]: { totalDataPoints: number; blocksPerPeriod: number } } = {
+const mapPeriod: { [period in Period]: { totalDataPoints: number; blocksPerPeriod: number } } = {
   '1D': { totalDataPoints: 24, blocksPerPeriod: Math.floor(blocksPerDay / 24) },
   '1W': { totalDataPoints: 7, blocksPerPeriod: blocksPerDay },
   '1M': { totalDataPoints: 30, blocksPerPeriod: blocksPerDay },
@@ -82,7 +83,7 @@ export const HistoryChartContainer: React.FC<Props> = ({ hidden, marketMakerAddr
   const [latestBlockNumber, setLatestBlockNumber] = useState<Maybe<number>>(null)
   const [blocks, setBlocks] = useState<Maybe<Block[]>>(null)
   const holdingsSeries = useHoldingsHistory(marketMakerAddress, blocks)
-  const [period, setPeriod] = useState('1W')
+  const [period, setPeriod] = useState<Period>('1W')
 
   useEffect(() => {
     library.getBlockNumber().then(setLatestBlockNumber)
@@ -90,7 +91,7 @@ export const HistoryChartContainer: React.FC<Props> = ({ hidden, marketMakerAddr
 
   useEffect(() => {
     const getBlocks = async (latestBlockNumber: number) => {
-      const { totalDataPoints, blocksPerPeriod } = mapPeriod[period]
+      const { blocksPerPeriod, totalDataPoints } = mapPeriod[period]
 
       if (latestBlockNumber) {
         const blockNumbers = Array.from(new Array(totalDataPoints), (_, i) => i).map(
@@ -109,11 +110,11 @@ export const HistoryChartContainer: React.FC<Props> = ({ hidden, marketMakerAddr
 
   return hidden ? null : (
     <HistoryChart
-      value={period}
-      onChange={setPeriod}
       holdingSeries={holdingsSeries}
-      outcomes={outcomes}
+      onChange={setPeriod}
       options={Object.keys(mapPeriod)}
+      outcomes={outcomes}
+      value={period}
     />
   )
 }

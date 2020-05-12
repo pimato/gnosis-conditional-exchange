@@ -5,14 +5,14 @@ import { Area, AreaChart, Tooltip, XAxis, YAxis } from 'recharts'
 import { ThemeContext } from 'styled-components'
 
 import { calcPrice } from '../../../../util/tools'
-import { HistoricData } from '../../../../util/types'
+import { HistoricData, Period } from '../../../../util/types'
 import { Select } from '../../../common'
 
 type Props = {
   holdingSeries: Maybe<HistoricData>
   outcomes: string[]
-  onChange: (s: string) => void
-  value: string
+  onChange: (s: Period) => void
+  value: Period
   options: string[]
 }
 
@@ -40,7 +40,7 @@ const renderTooltipContent = (o: any) => {
   )
 }
 
-export const HistoryChart: React.FC<Props> = ({ holdingSeries, outcomes, onChange, value, options }) => {
+export const HistoryChart: React.FC<Props> = ({ holdingSeries, onChange, options, outcomes, value }) => {
   const data =
     holdingSeries &&
     holdingSeries
@@ -61,7 +61,7 @@ export const HistoryChart: React.FC<Props> = ({ holdingSeries, outcomes, onChang
       <div>There is not enough historical data for this market</div>
     ) : (
       <>
-        <Select name="select-period-chart" onChange={e => onChange(e.target.value)} value={value}>
+        <Select name="select-period-chart" onChange={e => onChange(e.target.value as Period)} value={value}>
           {options.map(value => {
             return (
               <option key={value} value={value}>
