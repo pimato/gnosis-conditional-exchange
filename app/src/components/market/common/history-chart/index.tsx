@@ -66,9 +66,10 @@ const useHoldingsHistory = (marketMakerAddress: string, blocks: Maybe<Block[]>):
 type Props = {
   marketMakerAddress: string
   hidden: boolean
+  outcomes: string[]
 }
 
-export const HistoryChartContainer: React.FC<Props> = ({ hidden, marketMakerAddress }) => {
+export const HistoryChartContainer: React.FC<Props> = ({ hidden, marketMakerAddress, outcomes }) => {
   const { library } = useWeb3Context()
   const [latestBlockNumber, setLatestBlockNumber] = useState<Maybe<number>>(null)
   const [blocks, setBlocks] = useState<Maybe<Block[]>>(null)
@@ -99,5 +100,5 @@ export const HistoryChartContainer: React.FC<Props> = ({ hidden, marketMakerAddr
     }
   }, [latestBlockNumber, library])
 
-  return hidden ? null : <HistoryChart holdingSeries={holdingsSeries} />
+  return hidden ? null : <HistoryChart holdingSeries={holdingsSeries} outcomes={outcomes} />
 }
