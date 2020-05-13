@@ -8,6 +8,7 @@ import { calcPrice } from '../../../../util/tools'
 import { HistoricData, Period } from '../../../../util/types'
 import { ButtonSelectable } from '../../../button'
 import { InlineLoading } from '../../../loading'
+import { OutcomeItemLittleBallOfJoyAndDifferentColors } from '../common_styled'
 
 const commonWrapperCSS = css`
   border-top: 1px solid ${props => props.theme.borders.borderColorLighter};
@@ -74,6 +75,53 @@ const ButtonsWrapper = styled.div`
   }
 `
 
+const ChartTooltip = styled.div`
+  background: #fff;
+  border-radius: 2px;
+  border: 1px solid ${props => props.theme.borders.borderColorLighter};
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.12);
+  min-width: 160px;
+  padding: 17px;
+`
+
+const TooltipTitle = styled.h4`
+  color: ${props => props.theme.colors.textColorDark};
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 0 0 10px;
+  text-align: left;
+`
+
+const Legends = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0;
+`
+
+const Legend = styled.li`
+  align-items: center;
+  color: ${props => props.theme.colors.textColor};
+  display: flex;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+
+  strong {
+    color: ${props => props.theme.colors.textColorDarker};
+    font-weight: 500;
+    margin-right: 6px;
+  }
+`
+
+const AnEvenSmallerLittleBall = styled(OutcomeItemLittleBallOfJoyAndDifferentColors)`
+  height: 8px;
+  margin-right: 12px;
+  width: 8px;
+`
+
 type Props = {
   holdingSeries: Maybe<HistoricData>
   onChange: (s: Period) => void
@@ -95,14 +143,18 @@ const renderTooltipContent = (o: any) => {
   const { label, payload } = o
 
   return (
-    <div className="customized-tooltip-content">
-      <p className="total">{label}</p>
-      <ul className="list">
+    <ChartTooltip>
+      <TooltipTitle>{label}</TooltipTitle>
+      <Legends>
         {payload.reverse().map((entry: any, index: number) => (
-          <li key={`item-${index}`}>{`${entry.name}: (${toPercent(entry.value)})`}</li>
+          <Legend key={`item-${index}`}>
+            <AnEvenSmallerLittleBall outcomeIndex={index} />
+            <strong>{`${toPercent(entry.value)}`}</strong>
+            {`- ${entry.name}`}
+          </Legend>
         ))}
-      </ul>
-    </div>
+      </Legends>
+    </ChartTooltip>
   )
 }
 
