@@ -12,7 +12,7 @@ interface Props {
   collateral: BigNumber
 }
 
-const ClosedMarketTopDetails: React.FC<Props> = (props: Props) => {
+const MarketTopDetailsClosed: React.FC<Props> = (props: Props) => {
   const { marketMakerData } = props
 
   const { arbitrator, collateral: collateralToken, collateralVolume, question } = marketMakerData
@@ -37,4 +37,4 @@ const ClosedMarketTopDetails: React.FC<Props> = (props: Props) => {
   )
 }
 
-export { ClosedMarketTopDetails }
+export { MarketTopDetailsClosed }

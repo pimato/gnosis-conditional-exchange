@@ -15,7 +15,7 @@ interface Props {
   toggleTitle: string
 }
 
-const MarketTopDetails: React.FC<Props> = (props: Props) => {
+const MarketTopDetailsOpen: React.FC<Props> = (props: Props) => {
   const [showingExtraInformation, setExtraInformation] = useState(false)
   const [showingTradeHistory, setTradeHistory] = useState(false)
   const [tradeHistoryLoaded, setTradeHistoryLoaded] = useState(false)
@@ -100,4 +100,4 @@ const MarketTopDetails: React.FC<Props> = (props: Props) => {
   )
 }
 
-export { MarketTopDetails }
+export { MarketTopDetailsOpen }
