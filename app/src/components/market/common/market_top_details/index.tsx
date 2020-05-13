@@ -6,7 +6,7 @@ import { MarketMakerData } from '../../../../util/types'
 import { GridTwoColumns, SubsectionTitleAction, SubsectionTitleWrapper } from '../../../common'
 import { TitleValue } from '../../../common/text/title_value'
 import { DisplayArbitrator } from '../display_arbitrator'
-import { HistoryChartContainer } from '../history-chart'
+import { HistoryChartContainer } from '../history_chart'
 import { MarketTitle } from '../market_title'
 
 interface Props {

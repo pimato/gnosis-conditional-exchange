@@ -10,10 +10,10 @@ import { Select } from '../../../common'
 
 type Props = {
   holdingSeries: Maybe<HistoricData>
-  outcomes: string[]
   onChange: (s: Period) => void
-  value: Period
   options: string[]
+  outcomes: string[]
+  value: Period
 }
 
 const timestampToDate = (timestamp: number, value: string) => {
