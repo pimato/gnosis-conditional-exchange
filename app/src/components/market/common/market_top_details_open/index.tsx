@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import styled from 'styled-components'
 
 import { SHOW_TRADE_HISTORY, TOGGLEABLE_EXTRA_INFORMATION } from '../../../../common/constants'
 import { formatBigNumber, formatDate } from '../../../../util/tools'
@@ -8,6 +9,21 @@ import { TitleValue } from '../../../common/text/title_value'
 import { DisplayArbitrator } from '../display_arbitrator'
 import { HistoryChartContainer } from '../history_chart'
 import { MarketTitle } from '../market_title'
+
+const SubsectionTitleActionWrapper = styled.div`
+  align-items: center;
+  display: flex;
+  margin-left: auto;
+`
+const Breaker = styled.div`
+  &::before {
+    content: '|';
+    margin: 0 8px;
+  }
+  &:last-child {
+    display: none;
+  }
+`
 
 interface Props {
   marketMakerData: MarketMakerData
@@ -37,8 +53,11 @@ const MarketTopDetailsOpen: React.FC<Props> = (props: Props) => {
     ? `${formatBigNumber(collateralVolume, collateral.decimals)} ${collateral.symbol}`
     : '-'
 
-  const toggleExtraInformation = () =>
+  const toggleExtraInformation = () => {
     showingExtraInformation ? setExtraInformation(false) : setExtraInformation(true)
+    setTradeHistory(false)
+  }
+
   const toggleTradeHistory = () => {
     if (showingTradeHistory) {
       setTradeHistory(false)
@@ -46,22 +65,31 @@ const MarketTopDetailsOpen: React.FC<Props> = (props: Props) => {
       setTradeHistory(true)
       setTradeHistoryLoaded(true)
     }
+    setExtraInformation(false)
   }
 
   return (
     <>
       <SubsectionTitleWrapper>
         <MarketTitle showSubtitleFAQ={false} templateId={question.templateId} title={title} />
-        {TOGGLEABLE_EXTRA_INFORMATION && (
-          <SubsectionTitleAction onClick={toggleExtraInformation}>
-            {showingExtraInformation ? 'Hide' : 'Show'} {toggleTitle}
-          </SubsectionTitleAction>
-        )}
-        {SHOW_TRADE_HISTORY && (
-          <SubsectionTitleAction onClick={toggleTradeHistory}>
-            {`${showingTradeHistory ? 'Hide' : 'Show'} trade history`}
-          </SubsectionTitleAction>
-        )}
+        <SubsectionTitleActionWrapper>
+          {TOGGLEABLE_EXTRA_INFORMATION && (
+            <>
+              <SubsectionTitleAction onClick={toggleExtraInformation}>
+                {showingExtraInformation ? 'Hide' : 'Show'} {toggleTitle}
+              </SubsectionTitleAction>
+              <Breaker />
+            </>
+          )}
+          {SHOW_TRADE_HISTORY && (
+            <>
+              <SubsectionTitleAction onClick={toggleTradeHistory}>
+                {`${showingTradeHistory ? 'Hide' : 'Show'} trade history`}
+              </SubsectionTitleAction>
+              <Breaker />
+            </>
+          )}
+        </SubsectionTitleActionWrapper>
       </SubsectionTitleWrapper>
       <GridTwoColumns>
         {showingExtraInformation ? (
