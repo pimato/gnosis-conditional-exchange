@@ -84,7 +84,7 @@ const MarketTopDetailsOpen: React.FC<Props> = (props: Props) => {
           {SHOW_TRADE_HISTORY && (
             <>
               <SubsectionTitleAction onClick={toggleTradeHistory}>
-                {`${showingTradeHistory ? 'Hide' : 'Show'} trade history`}
+                {`${showingTradeHistory ? 'Hide' : 'Show'} Trade History`}
               </SubsectionTitleAction>
               <Breaker />
             </>
