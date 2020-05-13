@@ -1,12 +1,78 @@
 import { bigNumberify } from 'ethers/utils'
 import moment from 'moment'
 import React, { useContext } from 'react'
-import { Area, AreaChart, Tooltip, XAxis, YAxis } from 'recharts'
-import { ThemeContext } from 'styled-components'
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import styled, { ThemeContext, css } from 'styled-components'
 
 import { calcPrice } from '../../../../util/tools'
 import { HistoricData, Period } from '../../../../util/types'
-import { Select } from '../../../common'
+import { ButtonSelectable } from '../../../button'
+import { InlineLoading } from '../../../loading'
+
+const commonWrapperCSS = css`
+  border-top: 1px solid ${props => props.theme.borders.borderColorLighter};
+  margin-top: 10px;
+  padding-top: 20px;
+  margin-left: -${props => props.theme.cards.paddingHorizontal};
+  margin-right: -${props => props.theme.cards.paddingHorizontal};
+  width: auto;
+`
+
+const NoData = styled.div`
+  ${commonWrapperCSS}
+  align-items: center;
+  color: ${props => props.theme.colors.textColorDarker};
+  display: flex;
+  font-size: 15px;
+  font-weight: 400;
+  height: 340px;
+  justify-content: center;
+  letter-spacing: 0.4px;
+  line-height: 1.3;
+  padding-left: ${props => props.theme.cards.paddingHorizontal};
+  padding-right: ${props => props.theme.cards.paddingHorizontal};
+`
+
+const CustomInlineLoading = styled(InlineLoading)`
+  ${commonWrapperCSS}
+  height: 340px;
+`
+
+const ChartWrapper = styled.div`
+  ${commonWrapperCSS}
+`
+
+const TitleWrapper = styled.div`
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 20px;
+  padding-left: ${props => props.theme.cards.paddingHorizontal};
+  padding-right: ${props => props.theme.cards.paddingHorizontal};
+`
+
+const Title = styled.h3`
+  color: ${props => props.theme.colors.textColorDarker};
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+  line-height: 1.3;
+  margin: 0;
+`
+
+const ButtonsWrapper = styled.div`
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+
+  .buttonSelectableMargin {
+    margin-left: 5px;
+
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+`
 
 type Props = {
   holdingSeries: Maybe<HistoricData>
@@ -56,49 +122,54 @@ export const HistoryChart: React.FC<Props> = ({ holdingSeries, onChange, options
 
   const themeContext = useContext(ThemeContext)
 
-  return holdingSeries && data ? (
+  return !data ? (
+    <CustomInlineLoading message="Loading Trade History" />
+  ) : holdingSeries && data ? (
     holdingSeries.length <= 1 ? (
-      <div>There is not enough historical data for this market</div>
+      <NoData>There is not enough historical data for this market</NoData>
     ) : (
-      <>
-        <Select name="select-period-chart" onChange={e => onChange(e.target.value as Period)} value={value}>
-          {options.map(value => {
-            return (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            )
-          })}
-        </Select>
-        <AreaChart
-          data={data}
-          height={300}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-          stackOffset="expand"
-          width={500}
-        >
-          <XAxis dataKey="date" />
-          <YAxis tickFormatter={toPercent} />
-          <Tooltip content={renderTooltipContent} />
-
-          {outcomes
-            .map((outcomeName, index) => {
-              const color = themeContext.outcomes.colors[index]
-
+      <ChartWrapper>
+        <TitleWrapper>
+          <Title>Trade History</Title>
+          <ButtonsWrapper>
+            {options.map((item, index) => {
               return (
-                <Area
-                  dataKey={outcomeName}
-                  fill={color.medium}
-                  key={`${index}-${outcomeName}`}
-                  stackId="1"
-                  stroke="#8884d8"
-                  type="monotone"
-                />
+                <ButtonSelectable
+                  active={value === item}
+                  className="buttonSelectableMargin"
+                  key={index}
+                  onClick={() => onChange(item as Period)}
+                >
+                  {item}
+                </ButtonSelectable>
               )
-            })
-            .reverse()}
-        </AreaChart>
-      </>
+            })}
+          </ButtonsWrapper>
+        </TitleWrapper>
+        <ResponsiveContainer height={300} width="100%">
+          <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }} stackOffset="expand">
+            <XAxis dataKey="date" />
+            <YAxis tickFormatter={toPercent} />
+            <Tooltip content={renderTooltipContent} />
+
+            {outcomes
+              .map((outcomeName, index) => {
+                const color = themeContext.outcomes.colors[index]
+                return (
+                  <Area
+                    dataKey={outcomeName}
+                    fill={color.medium}
+                    key={`${index}-${outcomeName}`}
+                    stackId="1"
+                    stroke="#8884d8"
+                    type="monotone"
+                  />
+                )
+              })
+              .reverse()}
+          </AreaChart>
+        </ResponsiveContainer>
+      </ChartWrapper>
     )
   ) : null
 }

@@ -107,7 +107,6 @@ export const HistoryChartContainer: React.FC<Props> = ({ hidden, marketMakerAddr
       getBlocks(latestBlockNumber)
     }
   }, [latestBlockNumber, library, period])
-
   return hidden ? null : (
     <HistoryChart
       holdingSeries={holdingsSeries}
