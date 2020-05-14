@@ -234,3 +234,13 @@ export function keys<T>(o: T): Array<keyof T> {
 export function range(max: number): number[] {
   return Array.from(new Array(max), (_, i) => i)
 }
+
+export const getMarketTitles = (templateId: Maybe<number>) => {
+  if (templateId === 5 || templateId === 6) {
+    return { marketTitle: 'Nuanced Binary Market', marketSubtitle: 'What is a nuanced-binary market?' }
+  } else if (templateId === 2) {
+    return { marketTitle: 'Categorical Market', marketSubtitle: 'What is a categorical market?' }
+  } else {
+    return { marketTitle: 'Binary Market', marketSubtitle: 'What is a binary market?' }
+  }
+}

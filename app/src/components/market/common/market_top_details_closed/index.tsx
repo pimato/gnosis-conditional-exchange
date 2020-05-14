@@ -1,8 +1,8 @@
 import { BigNumber } from 'ethers/utils'
 import React, { useState } from 'react'
 
-import { SHOW_TRADE_HISTORY } from '../../../../common/constants'
-import { formatBigNumber, formatDate } from '../../../../util/tools'
+import { LINK_FAQ, SHOW_TRADE_HISTORY } from '../../../../common/constants'
+import { formatBigNumber, formatDate, getMarketTitles } from '../../../../util/tools'
 import { MarketMakerData } from '../../../../util/types'
 import { GridTwoColumns, SubsectionTitleAction, SubsectionTitleWrapper, TitleValue } from '../../../common'
 import { Breaker, SubsectionTitleActionWrapper } from '../common_styled'
@@ -14,6 +14,8 @@ interface Props {
   marketMakerData: MarketMakerData
   collateral: BigNumber
 }
+
+const SUB_LINK = '#heading=h.9awaoq9ub17q'
 
 const MarketTopDetailsClosed: React.FC<Props> = (props: Props) => {
   const { marketMakerData } = props
@@ -45,11 +47,24 @@ const MarketTopDetailsClosed: React.FC<Props> = (props: Props) => {
     }
   }
 
+  const { marketSubtitle } = getMarketTitles(question.templateId)
+
   return (
     <>
       <SubsectionTitleWrapper>
-        <MarketTitle showSubtitleFAQ={true} templateId={question.templateId} />
+        <MarketTitle templateId={question.templateId} />
         <SubsectionTitleActionWrapper>
+          {LINK_FAQ && (
+            <SubsectionTitleActionWrapper>
+              <SubsectionTitleAction
+                onClick={() => {
+                  window.open(`${LINK_FAQ}${SUB_LINK}`)
+                }}
+              >
+                {marketSubtitle}
+              </SubsectionTitleAction>
+            </SubsectionTitleActionWrapper>
+          )}
           {SHOW_TRADE_HISTORY && (
             <>
               <Breaker />

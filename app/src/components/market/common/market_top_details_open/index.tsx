@@ -58,7 +58,7 @@ const MarketTopDetailsOpen: React.FC<Props> = (props: Props) => {
   return (
     <>
       <SubsectionTitleWrapper>
-        <MarketTitle showSubtitleFAQ={false} templateId={question.templateId} title={title} />
+        <MarketTitle templateId={question.templateId} title={title} />
         <SubsectionTitleActionWrapper>
           {TOGGLEABLE_EXTRA_INFORMATION && (
             <>
