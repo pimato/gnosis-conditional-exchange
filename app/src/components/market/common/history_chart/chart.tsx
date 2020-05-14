@@ -125,7 +125,7 @@ const AnEvenSmallerLittleBall = styled(OutcomeItemLittleBallOfJoyAndDifferentCol
 type Props = {
   holdingSeries: Maybe<HistoricData>
   onChange: (s: Period) => void
-  options: string[]
+  options: Period[]
   outcomes: string[]
   value: Period
 }
@@ -174,54 +174,54 @@ export const HistoryChart: React.FC<Props> = ({ holdingSeries, onChange, options
 
   const themeContext = useContext(ThemeContext)
 
-  return !data ? (
-    <CustomInlineLoading message="Loading Trade History" />
-  ) : holdingSeries && data ? (
-    holdingSeries.length <= 1 ? (
-      <NoData>There is not enough historical data for this market</NoData>
-    ) : (
-      <ChartWrapper>
-        <TitleWrapper>
-          <Title>Trade History</Title>
-          <ButtonsWrapper>
-            {options.map((item, index) => {
-              return (
-                <ButtonSelectable
-                  active={value === item}
-                  className="buttonSelectableMargin"
-                  key={index}
-                  onClick={() => onChange(item as Period)}
-                >
-                  {item}
-                </ButtonSelectable>
-              )
-            })}
-          </ButtonsWrapper>
-        </TitleWrapper>
-        <ResponsiveContainer height={300} width="100%">
-          <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }} stackOffset="expand">
-            <XAxis dataKey="date" />
-            <YAxis tickFormatter={toPercent} />
-            <Tooltip content={renderTooltipContent} />
+  if (!data) {
+    return <CustomInlineLoading message="Loading Trade History" />
+  }
+  if (holdingSeries && holdingSeries.length <= 1) {
+    return <NoData>There is not enough historical data for this market</NoData>
+  }
+  return (
+    <ChartWrapper>
+      <TitleWrapper>
+        <Title>Trade History</Title>
+        <ButtonsWrapper>
+          {options.map((item, index) => {
+            return (
+              <ButtonSelectable
+                active={value === item}
+                className="buttonSelectableMargin"
+                key={index}
+                onClick={() => onChange(item)}
+              >
+                {item}
+              </ButtonSelectable>
+            )
+          })}
+        </ButtonsWrapper>
+      </TitleWrapper>
+      <ResponsiveContainer height={300} width="100%">
+        <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }} stackOffset="expand">
+          <XAxis dataKey="date" />
+          <YAxis tickFormatter={toPercent} />
+          <Tooltip content={renderTooltipContent} />
 
-            {outcomes
-              .map((outcomeName, index) => {
-                const color = themeContext.outcomes.colors[index]
-                return (
-                  <Area
-                    dataKey={outcomeName}
-                    fill={color.medium}
-                    key={`${index}-${outcomeName}`}
-                    stackId="1"
-                    stroke="#8884d8"
-                    type="monotone"
-                  />
-                )
-              })
-              .reverse()}
-          </AreaChart>
-        </ResponsiveContainer>
-      </ChartWrapper>
-    )
-  ) : null
+          {outcomes
+            .map((outcomeName, index) => {
+              const color = themeContext.outcomes.colors[index]
+              return (
+                <Area
+                  dataKey={outcomeName}
+                  fill={color.medium}
+                  key={`${index}-${outcomeName}`}
+                  stackId="1"
+                  stroke="#8884d8"
+                  type="monotone"
+                />
+              )
+            })
+            .reverse()}
+        </AreaChart>
+      </ResponsiveContainer>
+    </ChartWrapper>
+  )
 }

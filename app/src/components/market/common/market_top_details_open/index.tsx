@@ -1,29 +1,14 @@
 import React, { useState } from 'react'
-import styled from 'styled-components'
 
 import { SHOW_TRADE_HISTORY, TOGGLEABLE_EXTRA_INFORMATION } from '../../../../common/constants'
 import { formatBigNumber, formatDate } from '../../../../util/tools'
 import { MarketMakerData } from '../../../../util/types'
 import { GridTwoColumns, SubsectionTitleAction, SubsectionTitleWrapper } from '../../../common'
 import { TitleValue } from '../../../common/text/title_value'
+import { Breaker, SubsectionTitleActionWrapper } from '../common_styled'
 import { DisplayArbitrator } from '../display_arbitrator'
 import { HistoryChartContainer } from '../history_chart'
 import { MarketTitle } from '../market_title'
-
-const SubsectionTitleActionWrapper = styled.div`
-  align-items: center;
-  display: flex;
-  margin-left: auto;
-`
-const Breaker = styled.div`
-  &::before {
-    content: '|';
-    margin: 0 8px;
-  }
-  &:last-child {
-    display: none;
-  }
-`
 
 interface Props {
   marketMakerData: MarketMakerData
@@ -33,12 +18,13 @@ interface Props {
 
 const MarketTopDetailsOpen: React.FC<Props> = (props: Props) => {
   const [showingExtraInformation, setExtraInformation] = useState(false)
-  const [showingTradeHistory, setTradeHistory] = useState(false)
+  const [showingTradeHistory, setShowingTradeHistory] = useState(false)
   const [tradeHistoryLoaded, setTradeHistoryLoaded] = useState(false)
 
   const { marketMakerData, title, toggleTitle } = props
   const {
     address,
+    answerFinalizedTimestamp,
     arbitrator,
     collateral,
     collateralVolume,
@@ -55,14 +41,15 @@ const MarketTopDetailsOpen: React.FC<Props> = (props: Props) => {
 
   const toggleExtraInformation = () => {
     showingExtraInformation ? setExtraInformation(false) : setExtraInformation(true)
-    setTradeHistory(false)
+    setShowingTradeHistory(false)
   }
 
   const toggleTradeHistory = () => {
     if (showingTradeHistory) {
-      setTradeHistory(false)
+      setShowingTradeHistory(false)
     } else {
-      setTradeHistory(true)
+      setShowingTradeHistory(true)
+      // After first load on demand we maintain this value to only load the data when history is shown.
       setTradeHistoryLoaded(true)
     }
     setExtraInformation(false)
@@ -119,6 +106,7 @@ const MarketTopDetailsOpen: React.FC<Props> = (props: Props) => {
       </GridTwoColumns>
       {tradeHistoryLoaded && (
         <HistoryChartContainer
+          answerFinalizedTimestamp={answerFinalizedTimestamp}
           hidden={!showingTradeHistory}
           marketMakerAddress={address}
           outcomes={question.outcomes}

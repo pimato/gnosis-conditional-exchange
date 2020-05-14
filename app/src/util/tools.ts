@@ -226,3 +226,7 @@ export async function promiseProps<T>(obj: { [K in keyof T]: Promise<T[K]> | T[K
 
   return result
 }
+
+export function keys<T>(o: T): Array<keyof T> {
+  return Object.keys(o) as any
+}

@@ -145,6 +145,7 @@ export interface MarketFilters {
 
 export interface MarketMakerData {
   address: string
+  answerFinalizedTimestamp: Maybe<BigNumber>
   arbitrator: Arbitrator
   balances: BalanceItem[]
   collateral: Token

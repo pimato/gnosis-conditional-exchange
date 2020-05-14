@@ -2,6 +2,7 @@ import React from 'react'
 
 import { LINK_FAQ } from '../../../../common/constants'
 import { SubsectionTitle, SubsectionTitleAction } from '../../../common'
+import { SubsectionTitleActionWrapper } from '../common_styled'
 
 interface Props {
   title?: string
@@ -28,13 +29,15 @@ const MarketTitle: React.FC<Props> = (props: Props) => {
     <>
       <SubsectionTitle>{title || marketTitle}</SubsectionTitle>
       {LINK_FAQ && showSubtitleFAQ && (
-        <SubsectionTitleAction
-          onClick={() => {
-            window.open(`${LINK_FAQ}${SUB_LINK}`)
-          }}
-        >
-          {marketSubtitle}
-        </SubsectionTitleAction>
+        <SubsectionTitleActionWrapper>
+          <SubsectionTitleAction
+            onClick={() => {
+              window.open(`${LINK_FAQ}${SUB_LINK}`)
+            }}
+          >
+            {marketSubtitle}
+          </SubsectionTitleAction>
+        </SubsectionTitleActionWrapper>
       )}
     </>
   )

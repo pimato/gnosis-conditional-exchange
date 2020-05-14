@@ -1,13 +1,20 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Block } from 'ethers/providers'
+import { BigNumber } from 'ethers/utils'
 import gql from 'graphql-tag'
-import React, { useEffect, useState } from 'react'
+import moment from 'moment'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useWeb3Context } from 'web3-react'
 
 import { Period } from '../../../../util/types'
 
 import { HistoryChart } from './chart'
+import { keys } from '../../../../util/tools'
 
+// This query will return an object where each entry is
+// `fixedProductMarketMaker_X: { outcomeTokenAmounts }`,
+// where X is a block number,
+//  and `outcomeTokenAmounts` is the amount of holdings of the market maker at that block.
 const buildQueryHistory = (blockNumbers: number[]) => {
   const subqueries = blockNumbers.map(
     blockNumber => `
@@ -66,28 +73,50 @@ const useHoldingsHistory = (marketMakerAddress: string, blocks: Maybe<Block[]>):
 }
 
 type Props = {
+  answerFinalizedTimestamp: Maybe<BigNumber>
   marketMakerAddress: string
   hidden: boolean
   outcomes: string[]
 }
 
 const blocksPerDay = 5760
+const blocksPerHour = Math.floor(blocksPerDay / 24)
+const blocksPerMinute = Math.floor(blocksPerHour / 60)
+
 const mapPeriod: { [period in Period]: { totalDataPoints: number; blocksPerPeriod: number } } = {
-  '1D': { totalDataPoints: 24, blocksPerPeriod: Math.floor(blocksPerDay / 24) },
+  '1D': { totalDataPoints: 24, blocksPerPeriod: blocksPerHour },
   '1W': { totalDataPoints: 7, blocksPerPeriod: blocksPerDay },
   '1M': { totalDataPoints: 30, blocksPerPeriod: blocksPerDay },
 }
 
-export const HistoryChartContainer: React.FC<Props> = ({ hidden, marketMakerAddress, outcomes }) => {
+const calcOffsetByDate = (nowOrClosedTs: number) => {
+  const now = moment()
+  const offsetInMinutes = moment(nowOrClosedTs)
+    .startOf('day')
+    .diff(now, 'minute')
+
+  return -offsetInMinutes * blocksPerMinute
+}
+
+export const HistoryChartContainer: React.FC<Props> = ({
+  answerFinalizedTimestamp,
+  hidden,
+  marketMakerAddress,
+  outcomes,
+}) => {
   const { library } = useWeb3Context()
   const [latestBlockNumber, setLatestBlockNumber] = useState<Maybe<number>>(null)
   const [blocks, setBlocks] = useState<Maybe<Block[]>>(null)
   const holdingsSeries = useHoldingsHistory(marketMakerAddress, blocks)
   const [period, setPeriod] = useState<Period>('1W')
+  const blocksOffset = useMemo(
+    () => calcOffsetByDate(answerFinalizedTimestamp ? answerFinalizedTimestamp.toNumber() * 1000 : Date.now()),
+    [answerFinalizedTimestamp],
+  )
 
   useEffect(() => {
-    library.getBlockNumber().then(setLatestBlockNumber)
-  }, [library])
+    library.getBlockNumber().then((latest: number) => setLatestBlockNumber(latest - blocksOffset))
+  }, [blocksOffset, library])
 
   useEffect(() => {
     const getBlocks = async (latestBlockNumber: number) => {
@@ -111,7 +140,7 @@ export const HistoryChartContainer: React.FC<Props> = ({ hidden, marketMakerAddr
     <HistoryChart
       holdingSeries={holdingsSeries}
       onChange={setPeriod}
-      options={Object.keys(mapPeriod)}
+      options={keys(mapPeriod)}
       outcomes={outcomes}
       value={period}
     />
