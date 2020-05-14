@@ -230,3 +230,7 @@ export async function promiseProps<T>(obj: { [K in keyof T]: Promise<T[K]> | T[K
 export function keys<T>(o: T): Array<keyof T> {
   return Object.keys(o) as any
 }
+
+export function range(max: number): number[] {
+  return Array.from(new Array(max), (_, i) => i)
+}

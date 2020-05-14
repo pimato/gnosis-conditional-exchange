@@ -6,10 +6,10 @@ import moment from 'moment'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useWeb3Context } from 'web3-react'
 
+import { keys, range } from '../../../../util/tools'
 import { Period } from '../../../../util/types'
 
 import { HistoryChart } from './chart'
-import { keys } from '../../../../util/tools'
 
 // This query will return an object where each entry is
 // `fixedProductMarketMaker_X: { outcomeTokenAmounts }`,
@@ -123,9 +123,7 @@ export const HistoryChartContainer: React.FC<Props> = ({
       const { blocksPerPeriod, totalDataPoints } = mapPeriod[period]
 
       if (latestBlockNumber) {
-        const blockNumbers = Array.from(new Array(totalDataPoints), (_, i) => i).map(
-          multiplier => latestBlockNumber - multiplier * blocksPerPeriod,
-        )
+        const blockNumbers = range(totalDataPoints).map(multiplier => latestBlockNumber - multiplier * blocksPerPeriod)
         const blocks = await Promise.all(blockNumbers.map(blockNumber => library.getBlock(blockNumber)))
 
         setBlocks(blocks)
